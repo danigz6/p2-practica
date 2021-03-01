@@ -97,6 +97,7 @@ bool checkMonth(Project &toDoList, string dateTask){
 	int first=0;
 	int second=0;
 	int month=0;
+	int day = 0;
 	bool good = false;
 	
 	first = dateTask[3] - '0';
@@ -107,6 +108,13 @@ bool checkMonth(Project &toDoList, string dateTask){
 		good = true;
 	}
 	else{
+		error(ERR_DATE);
+	}
+	
+	if (month == 2 && day > 28){
+		error(ERR_DATE);
+	}
+	else if ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30){
 		error(ERR_DATE);
 	}
 	
@@ -149,6 +157,20 @@ int searchList(Project &toDoList, string nameList){
            position = i;
         }
     } 
+
+    return position;
+}
+
+int searchTask(Project &toDoList, string nameTask){
+	int position=-1;
+
+    for (unsigned int i = 0; i < toDoList.lists.size(); i++) { 
+        for (unsigned int j = 0; j < toDoList.lists[i].tasks.size(); j++ ) {
+            if (toDoList.lists[i].tasks[j].name == nameTask) {
+                position=j;
+            }
+        } 
+    }
 
     return position;
 }
@@ -213,24 +235,7 @@ void addList(Project &toDoList){
 
 void deleteList(Project &toDoList){
 	string nameList;
-	
-	do{
-		cout << "Enter list name: "; 
-		getline(cin,nameList);
-		
-		if (nameList==""){
-			error(ERR_EMPTY);
-		}
-		
-	}while(nameList=="");
-}
-
-void addTask(Project &toDoList){
-	string nameList;
-	string nameTask;
-	string dateTask;
-	bool bien=true;
-	int position = 0;
+	int position=0;
 	
 	do{
 		cout << "Enter list name: "; 
@@ -244,7 +249,35 @@ void addTask(Project &toDoList){
 	
 	position=searchList(toDoList,nameList);
 	
-	if (position==-1){
+	if (position == -1){
+		error(ERR_LIST_NAME);
+	}
+	else{
+		toDoList.lists.erase(toDoList.lists.begin() + position);
+	}
+}
+
+void addTask(Project &toDoList){
+	string nameList;
+	string nameTask;
+	string dateTask;
+	int positionList = 0;
+	int positionTask = 0;
+	
+	do{
+		cout << "Enter list name: "; 
+		getline(cin,nameList);
+		
+		if (nameList==""){
+			error(ERR_EMPTY);
+		}
+		
+	}while(nameList=="");
+	
+	positionList=searchList(toDoList,nameList);
+	positionTask=searchTask(toDoList,nameList);
+	
+	if (positionList==-1){
 		error(ERR_LIST_NAME);
 	}
 	else{
@@ -255,21 +288,84 @@ void addTask(Project &toDoList){
 	cout << "Enter deadline: ";
 	cin >> dateTask;
 	
-	bien=checkDay(toDoList,dateTask);
-	
-	bien=checkMonth(toDoList,dateTask);
-	bien=checkYear(toDoList,dateTask);
-	
-	
+	toDoList.lists[positionList].tasks[positionTask].isDone=false;
 }
 
 void deleteTask(Project &toDoList){
+	string nameList;
+	string nameTask;
+	int positionList=0;
+	int positionTask=0;
+	
+	do{
+		cout << "Enter list name: "; 
+		getline(cin,nameList);
+		
+		if (nameList==""){
+			error(ERR_EMPTY);
+		}
+		
+	}while(nameList=="");
+	
+	positionList=searchList(toDoList,nameList);
+	
+	if (positionList==-1){
+		error(ERR_LIST_NAME);
+	}
+	else{
+		cout << "Enter task name: ";
+		getline(cin,nameTask);
+	}
+	
+	positionTask=searchTask(toDoList,nameTask);
+	
+	if (positionTask==-1){
+		error(ERR_TASK_NAME);
+	}
+	else{
+		toDoList.lists[positionList].tasks.erase(toDoList.lists[positionList].tasks.begin() + positionTask);
+	}	
 }
 
 void toggleTask(Project &toDoList){
+	string nameList;
+	string nameTask;
+	int positionList=0;
+	int positionTask=0;
+	
+	do{
+		cout << "Enter list name: "; 
+		getline(cin,nameList);
+		
+		if (nameList==""){
+			error(ERR_EMPTY);
+		}
+		
+	}while(nameList=="");
+	
+	positionList=searchList(toDoList,nameList);
+	
+	if (positionList==-1){
+		error(ERR_LIST_NAME);
+	}
+	else{
+		cout << "Enter task name: ";
+		getline(cin,nameTask);
+	}
+	
+	positionTask=searchTask(toDoList,nameTask);
+	
+	if (positionTask==-1){
+		error(ERR_TASK_NAME);
+	}
+	else{
+		toDoList.lists[positionList].tasks[positionTask].isDone=!toDoList.lists[positionList].tasks[positionTask].isDone;
+	}
 }
 
 void report(const Project &toDoList){
+	
+	cout << "Name: " << "cama"<<endl;
 }
 
 int main(){
